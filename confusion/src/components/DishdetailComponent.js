@@ -19,14 +19,14 @@ function RenderDish({dish}) {
        );
 }
 
-function RenderComments({comments}) {
+function RenderComments({comments, addComment, dishId}) {
 if(comments != null) {
   const commentListItems = comments.map((comment) =>
      {
        return (
               <li key={comment.id}>
                  <p> {comment.comment} </p>
-                 <p>--- {comment.author}, {new Intl.DateTimeFormat('en-US',{ year: 'numeric', month: 'short', day:'2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
+                 <p>-- {comment.author},  {new Intl.DateTimeFormat('en-US',{ year: 'numeric', month: 'short', day:'2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
               </li>
        );
      });
@@ -36,7 +36,7 @@ if(comments != null) {
           <ul className="list-unstyled">
              { commentListItems }
           </ul>
-          <CommentForm />
+          <CommentForm dishId={dishId} addComment={addComment} />
        </div>
      );
 }
@@ -62,7 +62,9 @@ const DishDetail= (props) => {
         </div>
         <div className="row">
               <RenderDish dish={props.dish} />
-              <RenderComments comments={props.comments} />
+              <RenderComments comments={props.comments}
+                addComment={props.addComment}
+                dishId={props.dish.id} />
         </div>
       </div>
     );
@@ -93,8 +95,8 @@ class CommentForm extends Component {
   }
 
   handleSubmit(values) {
-    console.log("Current State is: " + JSON.stringify(values));
-    alert("Current State is: " + JSON.stringify(values));
+    this.toggleModal();
+    this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
   }
 
   render() {
@@ -122,7 +124,7 @@ class CommentForm extends Component {
                 <Row className="form-group">
                   <Col md={12}>
                    <Label htmlFor="username">Your Name</Label>
-                   <Control.text model=".username" id="username" name="username" placeholder="Your Name" className="form-control"
+                   <Control.text model=".author" id="author" name="author" placeholder="Your Name" className="form-control"
                    validators={{required, minLength: minLength(3), maxLength: maxLength(15)}} />
                    <Errors className="text-danger" model=".username" show="touched"
                      messages={{
