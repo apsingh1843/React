@@ -7,10 +7,10 @@ import { baseUrl } from '../shared/baseUrl';
 function About(props) {
   console.log(props.leaders);
    const leaders = props.leaders.leaders.map((leader) => {
-        return (
-             <RenderLeader leader={leader} isLoading={props.leadersLoading} errMess={props.leadersErrMess} />
-        );
-   });
+                    return (
+                     <RenderLeader leader={leader} />
+                     );
+                    })
 
    function RenderLeader({leader}) {
        return (

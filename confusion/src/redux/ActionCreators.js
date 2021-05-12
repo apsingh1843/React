@@ -1,15 +1,42 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl';
 
-export const addComment = (dishId, rating, author, comment) => ({
-  //returns plain JS object
-  type: ActionTypes.ADD_COMMENT,
-  payload: {
+export const postComment = (dishId, rating, author, comment) => (dispatch) => {
+  const newComment = {
     dishId: dishId,
     rating: rating,
     author: author,
     comment: comment,
-  }
+  };
+  newComment.date = new Date().toISOString();
+  return fetch(baseUrl + 'comments', {
+    method: "POST",
+    body: JSON.stringify(newComment),
+    headers: {
+      "Content-Type": "application/json"
+    },
+    credentials: "same-origin"
+  })
+  .then(response => {
+    if(response.ok) {
+      return response;
+    } else {
+       var error = new Error('Error ' + response.status + ':' + response.statusText);
+       error.response = response;
+       throw error;
+    }
+  },
+    error => {
+      throw error;
+  })
+  .then(response => response.json())
+  .then(response => dispatch(addComment(response)))
+  .catch(error => {console.log('post comments', error.message); alert('Your comment could not be posted');});
+};
+
+export const addComment = (comment) =>({
+  type: ActionTypes.ADD_COMMENT,
+  payload: comment
 });
 
 //thunk (returns a function)
@@ -117,7 +144,7 @@ export const addPromos = (promos) => ({
 export const fetchLeaders = () => (dispatch) => {
   dispatch(leadersLoading(true));
 
-  return fetch(baseUrl + 'leaderrs')
+  return fetch(baseUrl + 'leaders')
          .then(response => {
            if(response.ok) {
              return response;
