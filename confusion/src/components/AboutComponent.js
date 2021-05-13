@@ -3,37 +3,71 @@ import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'r
 import { Link } from 'react-router-dom';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
+import { Fade, Stagger } from 'react-animation-components';
+
+function RenderLeader({leader}) {
+    return (
+        <div className="col-12 mt-5">
+          <Media tag="li">
+            <Media left top>
+               <Media object src={baseUrl + leader.image} alt={leader.name} />
+            </Media>
+            <Media body className="ml-5">
+             <Media heading>
+                 {leader.name}
+             </Media>
+             <Media>
+               {leader.designation}
+             </Media>
+             <Media className="mt-2">
+               {leader.description}
+             </Media>
+            </Media>
+          </Media>
+        </div>
+    );
+  }
 
 function About(props) {
   console.log(props.leaders);
-   const leaders = props.leaders.leaders.map((leader) => {
-                    return (
-                     <RenderLeader leader={leader} />
-                     );
-                    })
-
-   function RenderLeader({leader}) {
-       return (
-           <div className="col-12 mt-5">
-             <Media tag="li">
-               <Media left top>
-                  <Media object src={baseUrl + leader.image} alt={leader.name} />
-               </Media>
-               <Media body className="ml-5">
-                <Media heading>
-                    {leader.name}
-                </Media>
-                <Media>
-                  {leader.designation}
-                </Media>
-                <Media className="mt-2">
-                  {leader.description}
-                </Media>
-               </Media>
-             </Media>
-           </div>
-       );
-     }
+   const leaders = (() => {
+         if(props.leaders.isLoading) {
+            return(
+                <div className="container">
+                  <div className="row">
+                    <Loading />
+                  </div>
+                </div>
+            );
+         }
+         else if (props.leaders.errMess) {
+            return(
+                <div className="container">
+                  <div className="row">
+                    <div className="col-12">
+                      <h4>{props.leaders.errMess}</h4>
+                    </div>
+                  </div>
+                </div>
+            );
+         }
+         else {
+            return(
+              <ul className="list-unstyled">
+                <Stagger in>
+                    { props.leaders.leaders.map((leader) => {
+                      return (
+                        <Fade in>
+                          <RenderLeader leader={leader} />
+                        </Fade>
+                      );
+                     })
+                    }
+                </Stagger>
+              </ul>
+            );
+         }
+   }) ();
 
     return(
         <div className="container">
@@ -75,7 +109,7 @@ function About(props) {
                         <CardBody className="bg-faded">
                             <blockquote className="blockquote">
                                 <p className="mb-0">You better cut the pizza in four pieces because
-                                    I'm not hungry enough to eat six.</p>
+                                    Im not hungry enough to eat six.</p>
                                 <footer className="blockquote-footer">Yogi Berra,
                                 <cite title="Source Title">The Wit and Wisdom of Yogi Berra,
                                     P. Pepe, Diversion Books, 2014</cite>
